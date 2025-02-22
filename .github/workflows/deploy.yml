@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20" # Set Node.js to v18 or higher
+          node-version: "18" # Set Node.js to v18 or higher
 
       - name: Install dependencies
         run: npm install
@@ -25,7 +25,12 @@ jobs:
         run: npm install -g @angular/cli # Install Angular CLI globally
 
       - name: Run predeploy script
-        run: npm run predeploy # Run the predeploy script defined in package.json
+        run: npm run predeploy # Run the predeploy script defined in your package.json
+
+      - name: Set Git user identity
+        run: |
+          git config --global user.name "osamaalmidani" 
+          git config --global user.email "osama.al-midani@outlook.com"
 
       - name: Create versioned gh-pages branch
         run: |
