@@ -1,1 +1,28 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+    background-color: #1e1e1e;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .mat-form-field {
+    color: #fff;
+  }
+  
+  .mat-select-panel {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .mat-option {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .mat-chip {
+    background-color: #555;
+    color: #fff;
+  }
+  
+  .mat-chip-remove {
+    color: #fff;
+  }
