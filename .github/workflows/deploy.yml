@@ -13,46 +13,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Set up Node.js with the version you need
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18" # Set Node.js to v18 or higher
+          node-version: "18" # Ensure correct Node.js version
 
-      # Install dependencies (npm install)
       - name: Install dependencies
         run: npm install
 
-      # Install Angular CLI globally
       - name: Install Angular CLI
         run: npm install -g @angular/cli
 
-      # Run predeploy script to build the Angular app for production
       - name: Run predeploy script
-        run: npm run predeploy # Run the predeploy script defined in your package.json
+        run: npm run predeploy
 
-      # List the contents of dist/ to verify the build output
-      - name: List contents of dist directory
-        run: ls -alh dist/
-
-      # Set Git user identity for pushing changes
       - name: Set Git user identity
         run: |
-          git config --global user.name "osamaalmidani"  # Replace with your name
-          git config --global user.email "osama.al-midani@outlook.com"  # Replace with your email
+          git config --global user.name "osamaalmidani"
+          git config --global user.email "osama.al-midani@outlook.com"
 
-      # Deploy the built files to the gh-pages branch
-      - name: Deploy to gh-pages
+      - name: Generate unique branch name
+        run: echo "BRANCH_NAME=gh-pages-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
+
+      - name: Deploy to a new branch
         run: |
-          # Ensure the dist/angular-charts/browser directory exists
+          # Ensure the dist directory exists
           if [ ! -d "dist/angular-charts/browser" ]; then
             echo "Error: Build output not found. Please check your build configuration."
             exit 1
           fi
 
-          # Deploy the build files to the gh-pages branch using the GitHub Token for authentication
-          npx gh-pages -d dist/angular-charts/browser -r https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          # Create a new branch for this deployment
+          git checkout --orphan $BRANCH_NAME
+          git rm -rf .
+          cp -r dist/angular-charts/browser/* .
+          touch .nojekyll  # Prevent Jekyll processing
+          git add .
+          git commit -m "Deployment: $BRANCH_NAME"
+          git push origin $BRANCH_NAME --force
+
+      - name: Update GitHub Pages to use the new branch
+        run: |
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d "{\"source\": {\"branch\": \"$BRANCH_NAME\", \"path\": \"/\"}}" \
+            https://api.github.com/repos/${{ github.repository }}/pages
