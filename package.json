@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "predeploy": "ng build --configuration production --base-href '/angular-charts/'",
+    "predeploy": "ng build --configuration production --base-href /angular-charts/",
     "deploy": "gh-pages -d dist/angular-charts"
   },
   "private": true,
