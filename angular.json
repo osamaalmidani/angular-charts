@@ -52,7 +52,8 @@
                 }
               ],
               "outputHashing": "all",
-              "outputPath": "dist/angular-charts"
+              "outputPath": "dist/angular-charts/browser",
+              "baseHref": "/angular-charts/"
             },
             "development": {
               "optimization": false,

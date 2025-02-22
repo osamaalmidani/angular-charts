@@ -27,10 +27,17 @@ jobs:
       - name: Run predeploy script
         run: npm run predeploy # Run the predeploy script defined in your package.json
 
+      - name: Check if dist folder exists
+        run: |
+          if [ ! -d "dist/angular-charts/browser" ]; then
+            echo "Error: Build output not found. Please check your build configuration."
+            exit 1
+          fi
+
       - name: Set Git user identity
         run: |
-          git config --global user.name "osamaalmidani"  
-          git config --global user.email "osama.al-midani@outlook.com"
+          git config --global user.name "osamaalmidani"  # Replace with your name
+          git config --global user.email "osama.al-midani@outlook.com"  # Replace with your email
 
       - name: Clean untracked files
         run: git clean -fdx # Remove untracked files and directories
@@ -40,31 +47,21 @@ jobs:
           git reset --hard
           git clean -fd
 
-      - name: Create versioned gh-pages branch
+      - name: Deploy to gh-pages
         run: |
-          # Generate a unique branch name using the current date and time
-          BRANCH_NAME="gh-pages-$(date +'%Y-%m-%d-%H%M%S')"
+          # Ensure the dist directory exists
+          if [ ! -d "dist/angular-charts/browser" ]; then
+            echo "Error: Build output not found. Please check your build configuration."
+            exit 1
+          fi
 
-          # Check if the gh-pages branch exists, create and check it out if not
-          git fetch origin
-          git checkout -b $BRANCH_NAME
-
-          # Remove previous deployment files and copy the new ones
-          git rm -rf .
-          cp -r dist/angular-charts/browser/* .
-
-          # Prevent GitHub from ignoring asset files
-          touch .nojekyll
-
-          # Commit and push the new branch
-          git add .
-          git commit -m "Deploy to GitHub Pages ($BRANCH_NAME)"
-          git push origin $BRANCH_NAME
+          # Deploy the build files to the gh-pages branch
+          npx gh-pages -d dist/angular-charts/browser  # Use the deploy script to push the build to gh-pages
 
       - name: Set GitHub Pages Source to Versioned Branch
         run: |
           # Use GitHub API to update the Pages source to the new branch
           curl -X PATCH \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -d '{"source": {"branch": "'$BRANCH_NAME'", "path": "/"}}' \
+            -d '{"source": {"branch": "gh-pages", "path": "/"}}' \
             https://api.github.com/repos/${{ github.repository }}/pages
