@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Run predeploy script
-        run: npm run predeploy
+        run: ng build --configuration production --base-href /angular-charts/
 
       - name: Deploy to GitHub Pages
         run: |
