@@ -29,8 +29,16 @@ jobs:
 
       - name: Set Git user identity
         run: |
-          git config --global user.name "osamaalmidani" 
+          git config --global user.name "osamaalmidani"  
           git config --global user.email "osama.al-midani@outlook.com"
+
+      - name: Clean untracked files
+        run: git clean -fdx # Remove untracked files and directories
+
+      - name: Reset git to prevent issues
+        run: |
+          git reset --hard
+          git clean -fd
 
       - name: Create versioned gh-pages branch
         run: |
