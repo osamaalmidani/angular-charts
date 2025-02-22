@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli # Install Angular CLI globally
+
       - name: Run predeploy script
         run: ng build --configuration production --base-href /angular-charts/
 
