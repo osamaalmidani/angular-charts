@@ -16,23 +16,42 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20"
+          node-version: "20" # Set Node.js to v18 or higher
 
       - name: Install dependencies
         run: npm install
 
       - name: Install Angular CLI
-        run: npm install -g @angular/cli
+        run: npm install -g @angular/cli # Install Angular CLI globally
 
       - name: Run predeploy script
-        run: npm run predeploy
+        run: npm run predeploy # Run the predeploy script defined in package.json
 
-      - name: Deploy to GitHub Pages
+      - name: Create versioned gh-pages branch
         run: |
-          git checkout gh-pages
+          # Generate a unique branch name using the current date and time
+          BRANCH_NAME="gh-pages-$(date +'%Y-%m-%d-%H%M%S')"
+
+          # Check if the gh-pages branch exists, create and check it out if not
+          git fetch origin
+          git checkout -b $BRANCH_NAME
+
+          # Remove previous deployment files and copy the new ones
           git rm -rf .
           cp -r dist/angular-charts/browser/* .
+
+          # Prevent GitHub from ignoring asset files
           touch .nojekyll
+
+          # Commit and push the new branch
           git add .
-          git commit -m "Deploy to GitHub Pages"
-          git push origin gh-pages --force
+          git commit -m "Deploy to GitHub Pages ($BRANCH_NAME)"
+          git push origin $BRANCH_NAME
+
+      - name: Set GitHub Pages Source to Versioned Branch
+        run: |
+          # Use GitHub API to update the Pages source to the new branch
+          curl -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -d '{"source": {"branch": "'$BRANCH_NAME'", "path": "/"}}' \
+            https://api.github.com/repos/${{ github.repository }}/pages
