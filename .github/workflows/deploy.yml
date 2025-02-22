@@ -27,6 +27,9 @@ jobs:
       - name: Run predeploy script
         run: npm run predeploy # Run the predeploy script defined in your package.json
 
+      - name: List contents of dist directory
+        run: ls -alh dist/ # List files in the dist directory to check the build output
+
       - name: Check if dist folder exists
         run: |
           if [ ! -d "dist/angular-charts/browser" ]; then
