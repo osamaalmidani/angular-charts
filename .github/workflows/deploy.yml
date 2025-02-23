@@ -6,7 +6,7 @@ on:
       - master
 
 permissions:
-  contents: write # Required for deploying to GitHub Pages
+  contents: write # Required for deployment
 
 jobs:
   deploy:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "18" # Ensure correct Node.js version
+          node-version: "18"
 
       - name: Install dependencies
         run: npm install
@@ -35,18 +35,20 @@ jobs:
           git config --global user.name "osamaalmidani"
           git config --global user.email "osama.al-midani@outlook.com"
 
-      - name: Generate unique branch name
+      - name: Delete old gh-pages branch
+        run: |
+          git push origin --delete gh-pages || echo "Branch not found, skipping deletion"
+
+      - name: Generate new branch name
         run: echo "BRANCH_NAME=gh-pages-$(date +%Y%m%d-%H%M%S)" >> $GITHUB_ENV
 
       - name: Deploy to a new branch
         run: |
-          # Ensure the dist directory exists
           if [ ! -d "dist/angular-charts/browser" ]; then
             echo "Error: Build output not found. Please check your build configuration."
             exit 1
           fi
 
-          # Create a new branch for this deployment
           git checkout --orphan $BRANCH_NAME
           git rm -rf .
           cp -r dist/angular-charts/browser/* .

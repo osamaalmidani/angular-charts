@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "predeploy": "ng build --configuration production --base-href /angular-charts/",
-    "deploy": "gh-pages -d dist/angular-charts/browser"
+    "deploy": "npm run predeploy && npx gh-pages -d dist/angular-charts/browser --branch gh-pages --message '🚀 Deploying latest build'"
   },
   "private": true,
   "dependencies": {
